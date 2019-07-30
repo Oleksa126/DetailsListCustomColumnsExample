@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## details-list-custom-columns-example
 
 This is where you include your WebPart documentation.
@@ -24,3 +25,6 @@ gulp test - TODO
 gulp serve - TODO
 gulp bundle - TODO
 gulp package-solution - TODO
+=======
+# DetailsListCustomColumnsExample
+>>>>>>> faf4864a1f28450de75c21cbb5960d1e8131e5e9
