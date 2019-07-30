@@ -55,6 +55,7 @@ export function createListItems() {
   return users;
 }
 
+
 export default class DetailsListCustomColumnsExample extends React.Component<IDetailsListCustomColumnsExampleProps, IDetailsListCustomColumnsExampleState> {
   private _allItems:Array<IExampleItem>;
   constructor(props: IDetailsListCustomColumnsExampleProps, state:IDetailsListCustomColumnsExampleState) {
