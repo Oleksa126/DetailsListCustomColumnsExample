@@ -1,9 +1,9 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "details-list-custom-columns-example-client-side-solution",
+    "name": "Kontakte",
     "id": "4ed8b3a3-510f-42b1-942a-24484f843a9c",
-    "version": "1.0.0.0",
+    "version": "1.0.0.8",
     "includeClientSideAssets": true,
     "webApiPermissionRequests": [
       {
@@ -26,6 +26,6 @@
     "isDomainIsolated": false
   },
   "paths": {
-    "zippedPackage": "solution/details-list-custom-columns-example.sppkg"
+    "zippedPackage": "solution/Kontakte.sppkg"
   }
 }
