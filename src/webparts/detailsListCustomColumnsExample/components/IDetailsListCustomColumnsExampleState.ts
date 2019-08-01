@@ -12,4 +12,6 @@ export interface IDetailsListCustomColumnsExampleState {
   isLoading: boolean,
   filterDepartment:string,
   filterName:string
+  isSortedDescending:boolean,
+  columnKey:string
 }

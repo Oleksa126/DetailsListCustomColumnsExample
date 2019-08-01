@@ -28,7 +28,7 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
     this.searchWithGraph();
   }
   private setDefultUsers(): void {
-    console.log("Set default list items");
+    // console.log("Set default list items");
     var users: Array<IExampleItem> = new Array<IExampleItem>();
 
     this.state = {
@@ -41,12 +41,14 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
       pageNumber: 1,
       pageCount: 10,
       filterDepartment:"",
-      filterName:""
+      filterName:"",
+      isSortedDescending:false,
+      columnKey:""
     };
   }
   private searchWithGraph() { // Log the current operation
     // Log the current operation
-    console.log("Using graph method");
+    // console.log("Using graph method");
     var users: Array<IExampleItem> = new Array<IExampleItem>();
     this.props.context.msGraphClientFactory
       .getClient()
@@ -56,55 +58,50 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
           .select("displayName,mail,userPrincipalName,businessPhones,id,department")
           .top(999)
           .get((err, res) => {
-
-            if (err) {
-              console.error(err);
-              return;
-            }
-            res.value.map((item: any) => {
-
-              this.props.context.msGraphClientFactory.getClient().then((client1
-                : MSGraphClient)
-                : any => {
-                client1.api("users/" + item.id + "/photo/$value").version("v1.0").responseType('blob').get((err1, res1, raw) => {
-                  if (err) {
-                    console.error(err1);
-                    return;
-                  }
-                  const blobUrl = res1 != null ? window.URL.createObjectURL(res1) : "";
-                  console.log(item);
-                  users.push({
-                    thumbnail: blobUrl,
-                    Name: item.displayName,
-                    Email: item.userPrincipalName,
-                    WorkPhone: item.businessPhones.length > 0 ? item.businessPhones[0] : "",
-                    Department: item.department,
-                  });
-                  if (res.value.length == users.length) {
-                    console.log(users);
-                    let u1 = [...users.sort(function (a, b) { return a.Name > b.Name ? 1 : a.Name < b.Name ? -1 : 0 })];
-                    let u2 = [...users.sort(function (a, b) { return a.Name > b.Name ? 1 : a.Name < b.Name ? -1 : 0 })];
-                    let u3 = [...users.sort(function (a, b) { return a.Name > b.Name ? 1 : a.Name < b.Name ? -1 : 0 })];
-
-                    this.setState({
-                      isLoading: false,
-                      allItems: u1,
-                      sortedItems: u2,
-                      pageItems: u3.splice(0, this.state.pageCount),
-                      columns: _buildColumns(u3),
+              res.value.map((item: any) => {
+                this.props.context.msGraphClientFactory.getClient().then((client1
+                  : MSGraphClient)
+                  : any => {
+                    try{
+                  client1.api("users/" + item.id + "/photo/$value").version("v1.0").responseType('blob').get((err1, res1, raw) => {
+                    const blobUrl = res1 != null ? window.URL.createObjectURL(res1) : "";
+                    users.push({
+                      thumbnail: blobUrl,
+                      Name: item.displayName,
+                      Email: item.userPrincipalName,
+                      WorkPhone: item.businessPhones.length > 0 ? item.businessPhones[0] : "",
+                      Department: item.department,
                     });
-                  }
-                });
-              }
-              );
-            });
+                    if (res.value.length == users.length) {
+                      let u1 = [...users.sort(function (a, b) { return a.Name.toLowerCase() > b.Name.toLowerCase() ? 1 : a.Name.toLowerCase() < b.Name.toLowerCase() ? -1 : 0 })];
+                      let u2 = [...users.sort(function (a, b) { return a.Name.toLowerCase() > b.Name.toLowerCase() ? 1 : a.Name.toLowerCase() < b.Name.toLowerCase() ? -1 : 0 })];
+                      let u3 = [...users.sort(function (a, b) { return a.Name.toLowerCase() > b.Name.toLowerCase() ? 1 : a.Name.toLowerCase() < b.Name.toLowerCase() ? -1 : 0 })];
+  
+                      this.setState({
+                        isLoading: false,
+                        allItems: u1,
+                        sortedItems: u2,
+                        pageItems: u3.splice(0, this.state.pageCount),
+                        columns: _buildColumns(u3),
+                      });
+                    }
+                  });
+                  
+                }
+                catch(error){console.log(error)}
+
+                }
+                );
+              });
+
           });
       });
 
+
   }
   public render() {
-    console.log("render")
-    console.log(this.state.sortedItems)
+    // console.log("render")
+    // console.log(this.state.sortedItems)
     const { sortedItems, columns} = this.state;
     const leftArrovStyle = {
       'background-image': 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNv1OCegAAAA0SURBVDhPYxgFhIGrq+t/EIZySQMwzWQZgKyZZAPQNZNsAAhQbAAIUGwACFBswCggBBgYAGTLKYMf9UF2AAAAAElFTkSuQmCC")',
@@ -141,9 +138,9 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
       let startIndex: number = (pageNumber - 1) * pageCountDivisor;
       let listItemsCollection = [...listData];
       this.setState({ pageItems: listItemsCollection.splice(startIndex, pageCountDivisor), pageNumber: pageNumber });
-      console.log("_pagedButtonClick");
-      console.log(listItemsCollection.splice(startIndex, pageCountDivisor));
-      console.log(pageNumber);
+      // console.log("_pagedButtonClick");
+      // console.log(listItemsCollection.splice(startIndex, pageCountDivisor));
+      // console.log(pageNumber);
 
     };
 
@@ -207,10 +204,10 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
   };
 
   private _onChangeText = ( ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text :string): void => {
-    console.log(text);
+    // console.log(text);
     let pageCountDivisor: number = this.state.pageCount;
     let sorterDepartmet: string = this.state.filterDepartment;
-    console.log(pageCountDivisor);
+    // console.log(pageCountDivisor);
     let a  = [...this.state.allItems];
     let a2 = [...this.state.allItems];
     let a3=text ? (!(sorterDepartmet==null||sorterDepartmet=="")?
@@ -221,30 +218,24 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
      a2.filter(i => ((i.Name.toLowerCase().indexOf(text.toLowerCase()) > -1)&&((i.Department?i.Department:"").toLowerCase().indexOf(sorterDepartmet.toLowerCase())>-1))
      ):a2.filter(i => ((i.Name.toLowerCase().indexOf(text.toLowerCase()) > -1)))) :
       (!(sorterDepartmet==null||sorterDepartmet=="")?(a2.filter(i => (((i.Department?i.Department:"").toLowerCase().indexOf(sorterDepartmet.toLowerCase()) > -1)))):a2);
-   /* this.setState({
-      filterName:text,
-      sortedItems: text ? a.filter(i => ((i.Name.toLowerCase().indexOf(text.toLowerCase()) > -1) && ((sorterDepartmet==null || sorterDepartmet=="")||((i.Department != null) && (i.Department.toLowerCase().indexOf(sorterDepartmet.toLowerCase()) > -1))))) : a,
-      pageItems: text ? a2.filter(i => ((i.Name.toLowerCase().indexOf(text.toLowerCase()) > -1) &&  ((sorterDepartmet==null || sorterDepartmet=="")||((i.Department != null) && (i.Department.toLowerCase().indexOf(sorterDepartmet.toLowerCase()) > -1))))).splice(0, pageCountDivisor) : a2.splice(0, pageCountDivisor),
-      pageNumber:1
-    });*/
+    
+      if(this.state.columnKey!=null && this.state.columnKey!=""){
+      a3 = _copyAndSort(a3,this.state.columnKey,this.state.isSortedDescending);
+      a4 = _copyAndSort(a4,this.state.columnKey,this.state.isSortedDescending);
+    }
+
     this.setState({
       filterName:text,
       sortedItems: a3,
       pageItems: a4.splice(0, pageCountDivisor),
       pageNumber:1
     });
-    console.log(this.state.allItems);
-    console.log(this.state.sortedItems);
-    console.log(this.state.pageItems);
-    console.log(a);
   }
 
   private _onChangeTextDepartment = ( ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text :string): void => {
-    console.log(text);
     let pageCountDivisor: number = this.state.pageCount;
     let sorterName: string = this.state.filterName;
 
-    console.log(pageCountDivisor);
     let a = [...this.state.allItems];
     let a2 = [...this.state.allItems];
     let a3=text ? (!(sorterName==null||sorterName=="")?
@@ -255,16 +246,18 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
      a2.filter(i => (((i.Department?i.Department:"").toLowerCase().indexOf(text.toLowerCase()) > -1)&&(i.Name.toLowerCase().indexOf(sorterName.toLowerCase())>-1))
      ):a2.filter(i => (((i.Department?i.Department:"").toLowerCase().indexOf(text.toLowerCase()) > -1)))) :
       (!(sorterName==null||sorterName=="")?(a2.filter(i => ((i.Name.toLowerCase().indexOf(sorterName.toLowerCase()) > -1)))):a2);
-    this.setState({
+    
+      if(this.state.columnKey!=null && this.state.columnKey!=""){
+        a3 = _copyAndSort(a3,this.state.columnKey,this.state.isSortedDescending);
+        a4 = _copyAndSort(a4,this.state.columnKey,this.state.isSortedDescending);
+      }
+    
+      this.setState({
       filterDepartment:text,
       sortedItems: a3,
       pageItems: a4.splice(0, pageCountDivisor),
       pageNumber:1
     });
-    console.log(this.state.allItems);
-    console.log(this.state.sortedItems);
-    console.log(this.state.pageItems);
-    console.log(a);
   }
 
   private _onColumnClick = (event: React.MouseEvent<HTMLElement>, column: IColumn): void => {
@@ -283,6 +276,8 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
     let pageCountDivisor: number = this.state.pageCount;
     // Reset the items and columns to match the state.
     this.setState({
+      columnKey:column.fieldName!,
+      isSortedDescending:isSortedDescending,
       isLoading: false,
       sortedItems: sortedItems,
       columns: columns.map(col => {
@@ -300,7 +295,7 @@ export default class DetailsListCustomColumnsExample extends React.Component<IDe
   }
 
   private _onColumnHeaderContextMenu(column: IColumn | undefined, ev: React.MouseEvent<HTMLElement> | undefined): void {
-    console.log(`column ${column!.key} contextmenu opened.`);
+    // console.log(`column ${column!.key} contextmenu opened.`);
   }
 }
 
@@ -368,5 +363,10 @@ function _renderItemColumn(item: IExampleItem, index: number, column: IColumn) {
 
 function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
   const key = columnKey as keyof T;
-  return items.slice(0).sort((a: T, b: T) => ((isSortedDescending ? a[key] < b[key] : a[key] > b[key]) ? 1 : -1));
+  return items.slice(0).sort((a: T, b: T) => 
+    ((a[key]!=null && b[key]!=null) ?
+    ((isSortedDescending ? 
+      a[key].toString().toLowerCase() < b[key].toString().toLowerCase() : 
+      a[key].toString().toLowerCase() > b[key].toString().toLowerCase()) ? 
+      1 : -1):-1));
 }
