@@ -8,10 +8,10 @@ export interface IDetailsListCustomColumnsExampleState {
   columns: IColumn[];
   pageNumber: number;
   pageCount: number;
-  loaderMessage: string,
-  isLoading: boolean,
-  filterDepartment:string,
-  filterName:string
-  isSortedDescending:boolean,
-  columnKey:string
+  loaderMessage: string;
+  isLoading: boolean;
+  filterDepartment:string;
+  filterName:string;
+  isSortedDescending:boolean;
+  columnKey:string;
 }
